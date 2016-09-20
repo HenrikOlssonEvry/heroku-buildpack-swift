@@ -177,11 +177,7 @@ EOF
   fi
 say Ok
 
-step Installing build dependencies into build environment
-rsync -Pa $CACHE_DIR/.delta/ /app/.delta/ > $BUILD_DIR/build.log || fail rsync
-say Ok
-
-say Line 184
+say Line 180
 
 
 source "$BIN_DIR/utils"
@@ -197,5 +193,9 @@ mkdir -p $BUILD_DIR/.profile.d
 
 set-env PATH '$HOME/.swift-bin:$PATH'
 set-env LD_LIBRARY_PATH '$HOME/.swift-lib'
+
+step Installing build dependencies into build environment
+rsync -Pa $CACHE_DIR/.delta/ /app/.delta/ > $BUILD_DIR/build.log || fail rsync
+say Ok
 
 source "$BIN_DIR/steps/hooks/post_compile"
