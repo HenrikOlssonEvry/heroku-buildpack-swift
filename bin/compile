@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir>
+#!/bin/bash
 
 set -e
 set -o pipefail
@@ -21,7 +20,7 @@ fi
 
 mkdir -p "$CACHE_DIR"
 
-say Checking dependencies
+step Checking dependencies
 	if [ -f $CACHE_DIR/depends_done.$SCRIPT_VER ]; then
 	    say Dependencies cached
 	  else
@@ -47,7 +46,7 @@ say Checking dependencies
 	    fetch ubuntu14-swift-rt.tar.gz
 	    fetch ubuntu14-uuid-rt.tar.gz
 	    say Ok
-	    say Checking dependency MD5 values
+	    step Checking dependency MD5 values
 	    md5sum -c << EOF || fail Bad MD5 value
 	471e8f370015101a004998603922e919  $CACHE_DIR/cedar14-clang-v2.tar.gz
 	d50c65959548987594528e2704d67588  $CACHE_DIR/cedar14-libicu-dev.tar.gz
@@ -113,7 +112,9 @@ say Checking dependencies
 	say Ok
 
 
-
+	step Installing build dependencies into build environment
+	rsync -Pa $CACHE_DIR/.delta/ /app/.delta/ > $BUILD_DIR/build.log || fail rsync
+	say Ok
 
 
 source "$BIN_DIR/utils"
@@ -126,10 +127,6 @@ source "$BIN_DIR/steps/swift-install"
 
 # Setup application environment
 mkdir -p $BUILD_DIR/.profile.d
-
-say Installing build dependencies into build environment
-rsync -Pa $CACHE_DIR/.delta/ /app/.delta/ > $BUILD_DIR/build.log || fail rsync
-say Ok
 
 set-env PATH '$HOME/.swift-bin:$PATH'
 set-env LD_LIBRARY_PATH '$HOME/.swift-lib'
