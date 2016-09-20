@@ -34,17 +34,37 @@ say Ok
 step Utils
 source "$BIN_DIR/utils"
 say Ok
+step Swiftenv
 source "$BIN_DIR/steps/swiftenv"
+say Ok
+step Swift
 source "$BIN_DIR/steps/swift"
+say Ok
+step Clang
 source "$BIN_DIR/steps/clang"
+say Ok
+step Pre_Compile
 source "$BIN_DIR/steps/hooks/pre_compile"
+say Ok
+step Swift-Build
 source "$BIN_DIR/steps/swift-build"
+say Ok
+step Swift-Install
 source "$BIN_DIR/steps/swift-install"
+say Ok
 
+step Setup application environment
 # Setup application environment
 mkdir -p $BUILD_DIR/.profile.d
+say Ok
 
+step Set-env PATH
 set-env PATH '$HOME/.swift-bin:$PATH'
+say Ok
+step Set-env LD
 set-env LD_LIBRARY_PATH '$HOME/.swift-lib'
 
+say Ok
+step Post_Compile
 source "$BIN_DIR/steps/hooks/post_compile"
+say Ok
