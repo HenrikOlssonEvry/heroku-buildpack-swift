@@ -43,6 +43,9 @@ say Ok
 step Clang
 source "$BIN_DIR/steps/clang"
 say Ok
+step UUID
+source "$BIN_DIR/steps/uuid"
+say Ok
 step Pre_Compile
 source "$BIN_DIR/steps/hooks/pre_compile"
 say Ok
