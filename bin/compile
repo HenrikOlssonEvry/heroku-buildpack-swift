@@ -79,31 +79,6 @@ mkdir -p "$CACHE_DIR"
 
 say Line 80
 
-step Ensuring cache directory
-mkdir $CACHE_DIR 2> $BUILD_DIR/build.log
-mkdir $CACHE_DIR/runtime 2> $BUILD_DIR/build.log
-if [ -d $CACHE_DIR -a -d $CACHE_DIR/runtime ]; then
-    true
-  else
-    fail Creating cache dir
-  fi
-say Ok
-
-step Generating profile script
-mkdir $BUILD_DIR/.profile.d 2> $BUILD_DIR/build.log
-if [ -d $BUILD_DIR/.profile.d ]; then
-    true
-  else
-    fail Creating .profile.d dir
-  fi
-paths /app/.delta > $BUILD_DIR/.profile.d/perfect.sh || fail Saving perfect.sh
-chmod a+x $BUILD_DIR/.profile.d/perfect.sh || fail chmod perfect.sh
-say Ok
-
-step Setting paths
-. $BUILD_DIR/.profile.d/perfect.sh || fail Executing perfect.sh
-say Ok
-
 step Checking dependencies
 if [ -f $CACHE_DIR/depends_done.$SCRIPT_VER ]; then
     say Dependencies cached
@@ -206,7 +181,7 @@ step Installing build dependencies into build environment
 rsync -Pa $CACHE_DIR/.delta/ /app/.delta/ > $BUILD_DIR/build.log || fail rsync
 say Ok
 
-say Line 209
+say Line 184
 
 
 source "$BIN_DIR/utils"
