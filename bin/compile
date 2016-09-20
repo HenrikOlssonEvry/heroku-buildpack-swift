@@ -1,5 +1,13 @@
 #!/bin/bash
 
+function say() {
+    echo $* | sed -u 's/^/       /'
+  }
+
+function step() {
+    echo -----\> $*
+}
+
 set -e
 set -o pipefail
 
