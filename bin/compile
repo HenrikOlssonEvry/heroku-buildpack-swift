@@ -21,7 +21,7 @@ indent() {
   sed -u 's/^/       /'
 }
 
-unction paths() {
+function paths() {
     cat << EOF
 #!/bin/bash
 MY_PATH=$1
