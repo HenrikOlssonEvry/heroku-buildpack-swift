@@ -12,6 +12,10 @@ function step() {
     echo -----\> $*
 }
 
+function fetch() {
+    wget -P $CACHE_DIR $URL/$1 2> /dev/null || fail Fetching $1
+}
+
 BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname $BIN_DIR)
 
@@ -29,6 +33,47 @@ fi
 
 step Make cache dir
 mkdir -p "$CACHE_DIR"
+say Ok
+
+step Setup application environment
+# Setup application environment
+mkdir -p $BUILD_DIR/.profile.d
+say Ok
+
+step Setting paths
+. $BUILD_DIR/.profile.d/perfect.sh || fail Executing perfect.sh
+say Ok
+
+step Checking dependencies
+if [ -f $CACHE_DIR/depends_done.$SCRIPT_VER ]; then
+  say Dependencies cached
+else
+  say Ok
+  step Fetching dependencies
+  URL=http://www.perfect.org/_buildpack
+  fetch cedar14-uuid-dev.tar.gz
+  fetch cedar14-libmongoc.tar.gz
+  fetch ubuntu14-uuid-rt.tar.gz
+  fetch ubuntu14-libmongoc-rt.tar.gz
+  say Ok
+  step Decompressing dependencies
+  decomp cedar14-libmongoc.tar.gz
+  decomp cedar14-uuid-dev.tar.gz
+  decomp ubuntu14-uuid-rt.tar.gz
+  decomp ubuntu14-libmongoc-rt.tar.gz
+  say Ok
+  step Extracting dependencies
+
+  untar cedar14-libmongoc.tar
+  untar cedar14-uuid-dev.tar
+  untar_rt ubuntu14-libmongoc-rt.tar
+  untar_rt ubuntu14-uuid-rt.tar
+  touch $CACHE_DIR/depends_done.$SCRIPT_VER
+fi
+say Ok
+
+step Installing build dependencies into build environment
+rsync -Pa $CACHE_DIR/.delta/ /app/.delta/ > $BUILD_DIR/build.log || fail rsync
 say Ok
 
 step Utils
@@ -53,10 +98,7 @@ step Swift-Install
 source "$BIN_DIR/steps/swift-install"
 say Ok
 
-step Setup application environment
-# Setup application environment
-mkdir -p $BUILD_DIR/.profile.d
-say Ok
+
 
 step Set-env PATH
 set-env PATH '$HOME/.swift-bin:$PATH'
