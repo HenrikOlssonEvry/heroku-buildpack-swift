@@ -16,6 +16,28 @@ function fetch() {
     wget -P $CACHE_DIR $URL/$1 2> /dev/null || fail Fetching $1
 }
 
+function untar() {
+    tar -C $CACHE_DIR -xf $CACHE_DIR/$1 || fail Extracting $1
+    rm -f $CACHE_DIR/$1
+  }
+
+function untar_rt() {
+    tar -C $CACHE_DIR/runtime -xf $CACHE_DIR/$1 || fail Extracting $1
+    rm -f $CACHE_DIR/$1
+}
+
+function decomp() {
+    gunzip -f $CACHE_DIR/$1 || fail Decompressing $1
+  }
+
+function fail() {
+    say Build failure: $*
+    step Log
+    popd
+    cat $BUILD_DIR/build.log
+    exit 1
+}
+
 BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname $BIN_DIR)
 
@@ -38,6 +60,17 @@ say Ok
 step Setup application environment
 # Setup application environment
 mkdir -p $BUILD_DIR/.profile.d
+say Ok
+
+step Generating profile script
+mkdir $BUILD_DIR/.profile.d 2> $BUILD_DIR/build.log
+if [ -d $BUILD_DIR/.profile.d ]; then
+    true
+  else
+    fail Creating .profile.d dir
+  fi
+paths /app/.delta > $BUILD_DIR/.profile.d/perfect.sh || fail Saving perfect.sh
+chmod a+x $BUILD_DIR/.profile.d/perfect.sh || fail chmod perfect.sh
 say Ok
 
 step Setting paths
